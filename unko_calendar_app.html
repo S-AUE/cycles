@@ -1,0 +1,355 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body, #app {
+  font-family: 'Zen Maru Gothic', sans-serif;
+  background: var(--color-background-tertiary);
+  min-height: 600px;
+}
+
+#app {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+}
+
+.app-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f5f0e8 0%, #e8e0d0 100%);
+  border: 0.5px solid #d4c9b0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.month-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-primary);
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: background 0.15s;
+}
+
+.nav-btn:hover { background: var(--color-background-secondary); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+.month-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  min-width: 90px;
+  text-align: center;
+}
+
+.calendar-card {
+  background: var(--color-background-primary);
+  border-radius: 20px;
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  padding: 4px 0;
+}
+
+.weekday:first-child { color: #e05a5a; }
+.weekday:last-child { color: #5a88e0; }
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.12s, transform 0.1s;
+  position: relative;
+  padding: 2px;
+  user-select: none;
+}
+
+.day-cell:not(.empty):not(.future):hover {
+  background: var(--color-background-secondary);
+}
+
+.day-cell:not(.empty):not(.future):active {
+  transform: scale(0.92);
+}
+
+.day-cell.empty { cursor: default; }
+.day-cell.future { cursor: default; opacity: 0.35; }
+
+.day-num {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  line-height: 1;
+  margin-bottom: 1px;
+}
+
+.day-cell.today .day-num {
+  color: #b97a3a;
+  font-weight: 700;
+}
+
+.day-cell.sun .day-num { color: #e05a5a; }
+.day-cell.sat .day-num { color: #5a88e0; }
+.day-cell.today .day-num { color: #b97a3a !important; }
+
+.today-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #b97a3a;
+  margin-top: 1px;
+}
+
+.stamp {
+  font-size: 20px;
+  line-height: 1;
+  animation: pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.summary-card {
+  background: var(--color-background-primary);
+  border-radius: 16px;
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
+.summary-count {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.summary-right {
+  text-align: right;
+}
+
+.streak-badge {
+  background: #fdf3e7;
+  border: 0.5px solid #e8d4b0;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #a06830;
+  font-weight: 500;
+}
+</style>
+
+<div id="app">
+  <h2 class="sr-only" style="position:absolute;left:-9999px">うんこカレンダー - 毎日の記録</h2>
+
+  <div class="header">
+    <div class="app-icon">🪴</div>
+    <div class="month-nav">
+      <button class="nav-btn" id="prevBtn">‹</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button class="nav-btn" id="nextBtn">›</button>
+    </div>
+    <div style="width:44px"></div>
+  </div>
+
+  <div class="calendar-card">
+    <div class="weekday-row">
+      <div class="weekday">日</div>
+      <div class="weekday">月</div>
+      <div class="weekday">火</div>
+      <div class="weekday">水</div>
+      <div class="weekday">木</div>
+      <div class="weekday">金</div>
+      <div class="weekday">土</div>
+    </div>
+    <div class="days-grid" id="daysGrid"></div>
+  </div>
+
+  <div class="summary-card">
+    <div>
+      <div class="summary-label">今月の記録</div>
+      <div class="summary-count"><span id="monthCount">0</span> <span style="font-size:16px">回</span></div>
+    </div>
+    <div class="summary-right">
+      <div class="streak-badge" id="streakBadge">🔥 連続 0 日</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'unko_records_v1';
+const today = new Date();
+const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+let records = {};
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) records = JSON.parse(saved);
+} catch(e) {}
+
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch(e) {}
+}
+
+let viewYear = today.getFullYear();
+let viewMonth = today.getMonth();
+
+const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+
+function dateKey(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function isFuture(y, m, d) {
+  const dk = dateKey(y, m, d);
+  return dk > todayStr;
+}
+
+function render() {
+  const monthLabel = document.getElementById('monthLabel');
+  monthLabel.textContent = `${viewYear}年${viewMonth+1}月`;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const isMinMonth = viewYear === sixMonthsAgo.getFullYear() && viewMonth === sixMonthsAgo.getMonth();
+  const isCurrentMonth = viewYear === today.getFullYear() && viewMonth === today.getMonth();
+  prevBtn.disabled = isMinMonth;
+  nextBtn.disabled = isCurrentMonth;
+
+  const grid = document.getElementById('daysGrid');
+  grid.innerHTML = '';
+
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth+1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'day-cell empty';
+    grid.appendChild(empty);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dk = dateKey(viewYear, viewMonth, d);
+    const cell = document.createElement('div');
+    const dow = (firstDay + d - 1) % 7;
+    let cls = 'day-cell';
+    if (dow === 0) cls += ' sun';
+    if (dow === 6) cls += ' sat';
+    if (dk === todayStr) cls += ' today';
+    if (isFuture(viewYear, viewMonth, d)) cls += ' future';
+    cell.className = cls;
+
+    if (records[dk]) {
+      cell.innerHTML = `<div class="stamp">💩</div>`;
+    } else {
+      if (dk === todayStr) {
+        cell.innerHTML = `<div class="day-num">${d}</div><div class="today-dot"></div>`;
+      } else {
+        cell.innerHTML = `<div class="day-num">${d}</div>`;
+      }
+    }
+
+    if (!isFuture(viewYear, viewMonth, d)) {
+      cell.addEventListener('click', () => {
+        records[dk] = !records[dk];
+        if (!records[dk]) delete records[dk];
+        save();
+        render();
+      });
+    }
+
+    grid.appendChild(cell);
+  }
+
+  let count = 0;
+  for (let d = 1; d <= daysInMonth; d++) {
+    if (records[dateKey(viewYear, viewMonth, d)]) count++;
+  }
+  document.getElementById('monthCount').textContent = count;
+
+  let streak = 0;
+  let cur = new Date(today);
+  while (true) {
+    const dk = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+    if (records[dk]) {
+      streak++;
+      cur.setDate(cur.getDate() - 1);
+    } else break;
+  }
+  document.getElementById('streakBadge').textContent = `🔥 連続 ${streak} 日`;
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  viewMonth--;
+  if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+  render();
+});
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  viewMonth++;
+  if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+  render();
+});
+
+render();
+</script>
