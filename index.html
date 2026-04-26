@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>記録カレンダー</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23e8f4e8'/><path d='M50 75 C50 75 50 52 50 44' stroke='%236aaa6a' stroke-width='5' stroke-linecap='round'/><path d='M50 55 C50 55 36 49 28 35 C38 33 50 44 50 55Z' fill='%2388c488'/><path d='M50 46 C50 46 64 40 72 26 C62 24 50 35 50 46Z' fill='%23aad4aa'/><ellipse cx='50' cy='79' rx='10' ry='4' fill='%23c8b89a' opacity='0.5'/></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -27,7 +28,7 @@
     .header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       margin-bottom: 16px;
       padding: 0 4px;
     }
@@ -200,20 +201,11 @@
 <body>
 <div id="app">
   <div class="header">
-    <div class="app-icon">
-      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M13 22 C13 22 13 14 13 11" stroke="#8fae88" stroke-width="1.5" stroke-linecap="round"/>
-        <path d="M13 14 C13 14 9 12 7 8 C10 8 13 11 13 14Z" fill="#a8c9a0"/>
-        <path d="M13 11 C13 11 17 9 19 5 C16 5 13 8 13 11Z" fill="#c5dbbf"/>
-        <circle cx="13" cy="23" r="2.5" fill="#d4c9b0" opacity="0.5"/>
-      </svg>
-    </div>
     <div class="month-nav">
       <button class="nav-btn" id="prev">‹</button>
       <div class="month-label" id="mlabel"></div>
       <button class="nav-btn" id="next">›</button>
     </div>
-    <div style="width:44px"></div>
   </div>
 
   <div class="cal">
